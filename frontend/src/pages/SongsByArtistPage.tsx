@@ -75,43 +75,48 @@ export function SongsByArtistPage(): JSX.Element {
           <Loader />
         ) : (
           <SimpleGrid cols={2}>
-            {songs?.map((song) => (
-              <Group key={song.id} justify='space-between'>
-                <Text size='xs'>{song.name}</Text>
-                <Popover position='right' shadow='sm'>
-                  <Popover.Target>
-                    <Button color={theme.other.green} size='compact-xs'>
-                      <MdOutlineAddCircleOutline />
-                    </Button>
-                  </Popover.Target>
-                  <Popover.Dropdown>
-                    <Text fw={600} size='xs'>
-                      Add to playlist
-                    </Text>
-                    <Divider my='xs' />
-                    <Stack gap='xs'>
-                      {storedPlaylists.map((playlist) => (
-                        <Button
-                          color={theme.other.blue}
-                          size='compact-xs'
-                          justify='flex-start'
-                          variant='outline'
-                          key={playlist.id}
-                          onClick={() =>
-                            addSongToPlaylist(playlist.id, song.id)
-                          }
-                        >
-                          <Text size='xs' truncate>
-                            {playlist.name}
-                            {/* {`- ${playlist.name}`} */}
-                          </Text>
-                        </Button>
-                      ))}
-                    </Stack>
-                  </Popover.Dropdown>
-                </Popover>
-              </Group>
-            ))}
+            {songs && songs.length > 0 ? (
+              songs.map((song) => (
+                <Group key={song.id} justify='space-between'>
+                  <Text size='xs'>{song.name}</Text>
+                  <Popover position='right' shadow='sm'>
+                    <Popover.Target>
+                      <Button color={theme.other.green} size='compact-xs'>
+                        <MdOutlineAddCircleOutline />
+                      </Button>
+                    </Popover.Target>
+                    <Popover.Dropdown>
+                      <Text fw={600} size='xs'>
+                        Add to playlist
+                      </Text>
+
+                      <Divider my='xs' />
+
+                      <Stack gap='xs'>
+                        {storedPlaylists.map((playlist) => (
+                          <Button
+                            color={theme.other.blue}
+                            size='compact-xs'
+                            justify='flex-start'
+                            variant='outline'
+                            key={playlist.id}
+                            onClick={() =>
+                              addSongToPlaylist(playlist.id, song.id)
+                            }
+                          >
+                            <Text size='xs' truncate>
+                              {playlist.name}
+                            </Text>
+                          </Button>
+                        ))}
+                      </Stack>
+                    </Popover.Dropdown>
+                  </Popover>
+                </Group>
+              ))
+            ) : (
+              <Text>No songs found for this artist.</Text>
+            )}
           </SimpleGrid>
         )}
       </Card.Section>

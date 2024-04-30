@@ -9,8 +9,6 @@ import {
   Card,
   Divider,
   Group,
-  Input,
-  List,
   SimpleGrid,
   Stack,
   Text,
@@ -52,8 +50,6 @@ export function PlaylistManager(): JSX.Element {
       playlists.filter((p) => p.id !== playlistId)
     );
   };
-
-  console.log(playlists);
 
   return (
     <Card shadow='sm' w={600}>
@@ -97,7 +93,10 @@ export function PlaylistManager(): JSX.Element {
                     </Group>
                   </Accordion.Control>
                   <Accordion.Panel>
-                    <PlaylistItem songs={playlist.songs} />
+                    <PlaylistItem
+                      songs={playlist.songs}
+                      playlistId={playlist.id}
+                    />
                   </Accordion.Panel>
                 </Accordion.Item>
               ))}
