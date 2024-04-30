@@ -45,7 +45,11 @@ export function ArtistsList(): JSX.Element {
     return (
       <Grid.Col span={4} key={key} style={{ color: theme.other.red }} w={800}>
         <Accordion.Item value={key}>
-          <Accordion.Control>{key}</Accordion.Control>
+          <Accordion.Control>
+            <Text fw={600} style={{ color: theme.other.red }}>
+              {key.toUpperCase()}
+            </Text>
+          </Accordion.Control>
           <Accordion.Panel>
             <SimpleGrid cols={2}>
               {artistArray.map((artist: string) => (

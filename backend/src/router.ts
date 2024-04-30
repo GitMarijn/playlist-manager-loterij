@@ -1,6 +1,6 @@
 import z from "zod";
 import { TRPCError, initTRPC } from "@trpc/server";
-import { Songs, Artists, Song, Data, Artist, SearchZod } from "./types";
+import { Songs, Artists, Data, Artist, SearchZod } from "./types";
 import data from "./mockdatabase/db";
 
 const t = initTRPC.create();
