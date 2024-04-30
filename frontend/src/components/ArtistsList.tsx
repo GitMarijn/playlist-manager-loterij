@@ -7,6 +7,8 @@ import {
   Text,
   TextInput,
   Title,
+  Tooltip,
+  useMantineTheme,
 } from "@mantine/core";
 import { trpc } from "../App";
 import { NavLink } from "react-router-dom";
@@ -15,6 +17,7 @@ import { MdSearch } from "react-icons/md";
 import { useUncontrolled } from "@mantine/hooks";
 
 export function ArtistsList(): JSX.Element {
+  const theme = useMantineTheme();
   const { search, debounceSearch } = useSearchState();
   const { data: artists, isLoading } = trpc.getArtists.useQuery({ search });
 
@@ -35,16 +38,27 @@ export function ArtistsList(): JSX.Element {
   const sortedArtists = Object.keys(artists).map((key) => {
     const artistArray = artists[key as keyof typeof artists];
 
+    if (!artistArray) {
+      return null;
+    }
+
     return (
-      <Grid.Col span={4} key={key}>
+      <Grid.Col span={4} key={key} style={{ color: theme.other.red }} w={800}>
         <Accordion.Item value={key}>
           <Accordion.Control>{key}</Accordion.Control>
           <Accordion.Panel>
             <SimpleGrid cols={2}>
               {artistArray.map((artist: string) => (
-                <Text truncate size='xs' key={artist} w='100%'>
-                  <NavLink to={`/songs/${artist}`}>{artist}</NavLink>
-                </Text>
+                <Tooltip key={artist} label={artist}>
+                  <Text truncate size='xs' w='100%'>
+                    <NavLink
+                      style={{ color: theme.other.blue }}
+                      to={`/songs/${artist}`}
+                    >
+                      {artist}
+                    </NavLink>
+                  </Text>
+                </Tooltip>
               ))}
             </SimpleGrid>
           </Accordion.Panel>
@@ -54,8 +68,14 @@ export function ArtistsList(): JSX.Element {
   });
 
   return (
-    <Stack align='center' mt='xl'>
-      <Title>Artists</Title>
+    <Stack
+      align='center'
+      mt='xl'
+      p='md'
+      style={{ border: `2px solid ${theme.other.red}`, borderRadius: 4 }}
+      w={800}
+    >
+      <Title style={{ color: theme.other.green }}>Artists</Title>
       <TextInput
         placeholder='Search artists'
         leftSection={<MdSearch />}

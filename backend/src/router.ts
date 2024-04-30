@@ -31,16 +31,26 @@ export const trpcRouter = t.router({
       const artistsWithLetter = filteredArtists.filter((artist) =>
         artist.name.toLowerCase().startsWith(letter)
       );
-      artistsByLetter[letter] = artistsWithLetter.map((artist) => artist.name);
+      if (artistsWithLetter.length > 0) {
+        artistsByLetter[letter] = artistsWithLetter.map(
+          (artist) => artist.name
+        );
+      }
     }
 
     const numericArtists = filteredArtists
       .filter((artist) => /^\d/.test(artist.name))
       .map((artist) => artist.name);
 
+    Object.keys(artistsByLetter).forEach((letter) => {
+      if (!artistsByLetter[letter]) {
+        delete artistsByLetter[letter];
+      }
+    });
+
     return {
       ...artistsByLetter,
-      "#": numericArtists,
+      ...(numericArtists.length > 0 ? { "#": numericArtists } : {}),
     };
   }),
 
@@ -59,6 +69,7 @@ export const trpcRouter = t.router({
       }
 
       const artistSongs = songs.filter((song) => song.artist === artist.name);
+
       return artistSongs;
     }),
 
@@ -66,14 +77,7 @@ export const trpcRouter = t.router({
     .input(z.array(z.number()))
     .output(Songs)
     .query(({ input }) => {
-      try {
-        return songs.filter((song) => input.includes(song.id));
-      } catch (error) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "An error occurred while retrieving playlist songs.",
-        });
-      }
+      return songs.filter((song) => input.includes(song.id));
     }),
 });
 

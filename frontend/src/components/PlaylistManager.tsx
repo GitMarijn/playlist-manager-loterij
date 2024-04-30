@@ -5,6 +5,7 @@ import {
 } from "../utils/localStorageHelpers";
 import {
   Accordion,
+  Box,
   Button,
   Card,
   Divider,
@@ -19,6 +20,7 @@ import {
 import { MdDeleteOutline } from "react-icons/md";
 import { Playlist } from "../types";
 import { PlaylistItem } from "./PlaylistItem";
+import { v4 as uuidv4 } from "uuid";
 
 export function PlaylistManager(): JSX.Element {
   const [playlists, setPlaylists] = useState<Array<Playlist>>([]);
@@ -34,7 +36,7 @@ export function PlaylistManager(): JSX.Element {
 
   const createPlaylist = () => {
     const newPlaylist: Playlist = {
-      id: playlists.length + 1,
+      uuid: uuidv4(),
       name: newPlaylistName,
       songs: [],
     };
@@ -43,18 +45,24 @@ export function PlaylistManager(): JSX.Element {
     setNewPlaylistName("");
   };
 
-  const deletePlaylist = (playlistId: number) => {
-    setPlaylists((prev) => prev.filter((p) => p.id !== playlistId));
+  const deletePlaylist = (playlistUuid: string) => {
+    setPlaylists((prev) => prev.filter((p) => p.uuid !== playlistUuid));
     setLocalStorageItem(
       "playlists",
-      playlists.filter((p) => p.id !== playlistId)
+      playlists.filter((p) => p.uuid !== playlistUuid)
     );
   };
 
   return (
-    <Card shadow='sm' w={600}>
+    <Card
+      shadow='sm'
+      w={800}
+      style={{ border: `2px solid ${theme.other.red}` }}
+    >
       <Card.Section p='md'>
-        <Title>Playlists</Title>
+        <Box ta='center'>
+          <Title style={{ color: theme.other.green }}>Playlists</Title>
+        </Box>
       </Card.Section>
       <Divider />
 
@@ -78,13 +86,20 @@ export function PlaylistManager(): JSX.Element {
           <Accordion>
             <SimpleGrid cols={2} mt='lg'>
               {playlists.map((playlist) => (
-                <Accordion.Item value={playlist.name} key={playlist.id}>
-                  <Accordion.Control>
-                    <Group justify='space-between' key={playlist.id}>
-                      <Text truncate>{playlist.name}</Text>
+                <Accordion.Item value={playlist.name} key={playlist.uuid}>
+                  <Accordion.Control
+                    style={{
+                      borderRadius: 4,
+                      border: `1px solid ${theme.other.yellow}`,
+                    }}
+                  >
+                    <Group justify='space-between' key={playlist.uuid}>
+                      <Text fw={600} truncate>
+                        {playlist.name}
+                      </Text>
                       <Button
                         color={theme.other.red}
-                        onClick={() => deletePlaylist(playlist.id)}
+                        onClick={() => deletePlaylist(playlist.uuid)}
                         size='compact-xs'
                         mr='sm'
                       >
@@ -95,7 +110,7 @@ export function PlaylistManager(): JSX.Element {
                   <Accordion.Panel>
                     <PlaylistItem
                       songs={playlist.songs}
-                      playlistId={playlist.id}
+                      playlistUuid={playlist.uuid}
                     />
                   </Accordion.Panel>
                 </Accordion.Item>

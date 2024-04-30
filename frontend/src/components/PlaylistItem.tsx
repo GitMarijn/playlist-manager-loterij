@@ -1,4 +1,11 @@
-import { Button, Group, Loader, Text, useMantineTheme } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Loader,
+  Text,
+  Tooltip,
+  useMantineTheme,
+} from "@mantine/core";
 import { Playlist } from "../types";
 import { trpc } from "../App";
 import { Fragment } from "react/jsx-runtime";
@@ -9,11 +16,12 @@ import {
 } from "../utils/localStorageHelpers";
 import { notifications } from "@mantine/notifications";
 import { useState } from "react";
+import { RiSpotifyLine } from "react-icons/ri";
 
 export function PlaylistItem({
   songs,
-  playlistId,
-}: Pick<Playlist, "songs"> & { playlistId: number }): JSX.Element {
+  playlistUuid,
+}: Pick<Playlist, "songs"> & { playlistUuid: string }): JSX.Element {
   const theme = useMantineTheme();
   const storedPlaylists = getLocalStorageItem("playlists") as Array<Playlist>;
   const utils = trpc.useUtils();
@@ -26,7 +34,7 @@ export function PlaylistItem({
   }
 
   const removeSongFromPlaylist = (songId: number) => {
-    const playlist = storedPlaylists.find((p) => p.id === playlistId);
+    const playlist = storedPlaylists.find((p) => p.uuid === playlistUuid);
     const updatedSongs = localSongs.filter((song) => song !== songId);
 
     if (playlist) {
@@ -58,16 +66,46 @@ export function PlaylistItem({
         songsInPlaylist
           .sort((a, b) => a.artist.localeCompare(b.artist))
           .map((song) => (
-            <Group key={song.id} justify='space-between' mb='xs' wrap='nowrap'>
-              <Text truncate size='xs'>{`${song.artist} - ${song.name}`}</Text>
-              <Button
-                color={theme.other.red}
-                onClick={() => removeSongFromPlaylist(song.id)}
-                size='compact-xs'
-                mr='sm'
-              >
-                <MdDeleteOutline />
-              </Button>
+            <Group
+              key={song.id}
+              justify='space-between'
+              mb='xs'
+              wrap='nowrap'
+              p={2}
+              style={{
+                border: `1px solid ${theme.other.green}`,
+                borderRadius: 4,
+              }}
+            >
+              <Tooltip label={`${song.artist} - ${song.name}`}>
+                <Text
+                  truncate
+                  size='xs'
+                >{`${song.artist} - ${song.name}`}</Text>
+              </Tooltip>
+              <Group wrap='nowrap' justify='flex-end' gap={0}>
+                <Tooltip label='Remove song from playlist'>
+                  <Button
+                    color={theme.other.red}
+                    onClick={() => removeSongFromPlaylist(song.id)}
+                    size='compact-xs'
+                    mr='xs'
+                  >
+                    <MdDeleteOutline />
+                  </Button>
+                </Tooltip>
+                <Tooltip label='Listen on Spotify'>
+                  <Button
+                    component='a'
+                    color={theme.other.green}
+                    target='_blank'
+                    href={"https://open.spotify.com/track/" + song.spotifyId}
+                    size='compact-xs'
+                  >
+                    <RiSpotifyLine />
+                  </Button>
+                </Tooltip>
+              </Group>
             </Group>
           ))
       )}

@@ -13,6 +13,7 @@ import {
   useMantineTheme,
   NavLink as MantineNavlink,
   Popover,
+  Tooltip,
 } from "@mantine/core";
 import {
   MdOutlineChevronLeft,
@@ -34,8 +35,9 @@ export function SongsByArtistPage(): JSX.Element {
     name: artist!,
   });
 
-  const addSongToPlaylist = (playlistId: number, songId: number) => {
-    const playlist = storedPlaylists.find((p) => p.id === playlistId);
+  const addSongToPlaylist = (playlistUuid: string, songId: number) => {
+    const playlist = storedPlaylists.find((p) => p.uuid === playlistUuid);
+
     if (playlist && !playlist.songs.includes(songId)) {
       playlist.songs.push(songId);
       setLocalStorageItem("playlists", storedPlaylists);
@@ -55,10 +57,14 @@ export function SongsByArtistPage(): JSX.Element {
   };
 
   return (
-    <Card shadow='sm'>
+    <Card
+      shadow='sm'
+      style={{ border: `2px solid ${theme.other.red}` }}
+      w={600}
+    >
       <Card.Section p='md'>
         <Stack gap='xs' align='center'>
-          <Title>Songs by {artist}</Title>
+          <Title style={{ color: theme.other.green }}>Songs by {artist}</Title>
           <MantineNavlink
             to='/'
             label='Back to artists overview'
@@ -81,9 +87,11 @@ export function SongsByArtistPage(): JSX.Element {
                   <Text size='xs'>{song.name}</Text>
                   <Popover position='right' shadow='sm'>
                     <Popover.Target>
-                      <Button color={theme.other.green} size='compact-xs'>
-                        <MdOutlineAddCircleOutline />
-                      </Button>
+                      <Tooltip label='Add to playlist'>
+                        <Button color={theme.other.green} size='compact-xs'>
+                          <MdOutlineAddCircleOutline />
+                        </Button>
+                      </Tooltip>
                     </Popover.Target>
                     <Popover.Dropdown>
                       <Text fw={600} size='xs'>
@@ -98,10 +106,10 @@ export function SongsByArtistPage(): JSX.Element {
                             color={theme.other.blue}
                             size='compact-xs'
                             justify='flex-start'
-                            variant='outline'
-                            key={playlist.id}
+                            variant='subtle'
+                            key={playlist.uuid}
                             onClick={() =>
-                              addSongToPlaylist(playlist.id, song.id)
+                              addSongToPlaylist(playlist.uuid, song.id)
                             }
                           >
                             <Text size='xs' truncate>

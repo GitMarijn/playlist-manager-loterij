@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const Playlist = z.object({
-  id: z.number(),
+  uuid: z.string().uuid(),
   name: z.string(),
   songs: z.array(z.number()),
 });
