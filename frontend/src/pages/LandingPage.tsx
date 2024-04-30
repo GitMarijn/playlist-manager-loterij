@@ -1,12 +1,12 @@
 import { Stack } from "@mantine/core";
-import List from "../songs/List";
 import { PlaylistManager } from "../components/PlaylistManager";
+import { ArtistsList } from "../components/ArtistsList";
 
 export function LandingPage(): JSX.Element {
   return (
-    <Stack>
+    <Stack align='center'>
       <PlaylistManager />
-      <List />
+      <ArtistsList />
     </Stack>
   );
 }

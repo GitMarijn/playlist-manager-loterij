@@ -1,9 +1,7 @@
 import z from "zod";
-import * as fs from "fs";
 import { TRPCError, initTRPC } from "@trpc/server";
-import { Songs, Artists, Song, Data, Artist } from "./types";
+import { Songs, Artists, Song, Data, Artist, SearchZod } from "./types";
 import data from "./mockdatabase/db";
-import { get } from "http";
 
 const t = initTRPC.create();
 
@@ -21,38 +19,22 @@ const MockDatabase = z.object({
 MockDatabase.parse(db);
 
 export const trpcRouter = t.router({
-  get: t.procedure
-    .input(z.number())
-    .output(Song)
-    .query((opts) => {
-      const { input } = opts;
-      const song = songs.find((song) => song.id === input);
-
-      if (!song) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: `Could not find song with id ${input}`,
-        });
-      }
-
-      return song;
-    }),
-  list: t.procedure.output(Songs).query(() => {
-    return songs;
-  }),
-
-  getArtists: t.procedure.query(() => {
+  getArtists: t.procedure.input(SearchZod).query(({ input }) => {
     const alphabet = "abcdefghijklmnopqrstuvwxyz";
     const artistsByLetter: Record<string, Array<Artist["name"]>> = {};
 
+    const filteredArtists = artists.filter((artist) =>
+      artist.name.toLowerCase().includes(input.search?.toLowerCase() ?? "")
+    );
+
     for (const letter of alphabet) {
-      const artistsWithLetter = artists.filter((artist) =>
+      const artistsWithLetter = filteredArtists.filter((artist) =>
         artist.name.toLowerCase().startsWith(letter)
       );
       artistsByLetter[letter] = artistsWithLetter.map((artist) => artist.name);
     }
 
-    const numericArtists = artists
+    const numericArtists = filteredArtists
       .filter((artist) => /^\d/.test(artist.name))
       .map((artist) => artist.name);
 
@@ -78,6 +60,20 @@ export const trpcRouter = t.router({
 
       const artistSongs = songs.filter((song) => song.artist === artist.name);
       return artistSongs;
+    }),
+
+  getPlaylistSongs: t.procedure
+    .input(z.array(z.number()))
+    .output(Songs)
+    .query(({ input }) => {
+      try {
+        return songs.filter((song) => input.includes(song.id));
+      } catch (error) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "An error occurred while retrieving playlist songs.",
+        });
+      }
     }),
 });
 

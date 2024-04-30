@@ -18,6 +18,13 @@ export const Artist = z.object({
   name: z.string(),
 });
 
+export const SearchZod = z.object({
+  search: z
+    .string()
+    .optional()
+    .transform((val) => val?.toLowerCase()),
+});
+
 export const Songs = z.array(Song);
 export const Artists = z.array(Artist);
 
