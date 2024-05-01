@@ -3,13 +3,14 @@ import ReactDOM from "react-dom/client";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import App from "./App";
-import { Center, createTheme, MantineProvider, Title } from "@mantine/core";
+import { Center, createTheme, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
+// Nationale Loterij colors
 const theme = createTheme({
   other: {
     green: "#69B82D",
@@ -23,7 +24,6 @@ root.render(
   <React.StrictMode>
     <MantineProvider theme={theme}>
       <Notifications position='bottom-center' />
-
       <Center p='md'>
         <App />
       </Center>

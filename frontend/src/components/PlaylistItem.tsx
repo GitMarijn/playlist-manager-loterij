@@ -17,6 +17,7 @@ import {
 import { notifications } from "@mantine/notifications";
 import { useState } from "react";
 import { RiSpotifyLine } from "react-icons/ri";
+import { PlaylistItemTooltipLabel } from "./PlaylistItemTooltipLabel";
 
 export function PlaylistItem({
   songs,
@@ -77,7 +78,7 @@ export function PlaylistItem({
                 borderRadius: 4,
               }}
             >
-              <Tooltip label={`${song.artist} - ${song.name}`}>
+              <Tooltip label={<PlaylistItemTooltipLabel song={song} />}>
                 <Text
                   truncate
                   size='xs'
@@ -94,17 +95,19 @@ export function PlaylistItem({
                     <MdDeleteOutline />
                   </Button>
                 </Tooltip>
-                <Tooltip label='Listen on Spotify'>
-                  <Button
-                    component='a'
-                    color={theme.other.green}
-                    target='_blank'
-                    href={"https://open.spotify.com/track/" + song.spotifyId}
-                    size='compact-xs'
-                  >
-                    <RiSpotifyLine />
-                  </Button>
-                </Tooltip>
+                {song.spotifyId && (
+                  <Tooltip label='Listen on Spotify'>
+                    <Button
+                      component='a'
+                      color={theme.other.green}
+                      target='_blank'
+                      href={"https://open.spotify.com/track/" + song.spotifyId}
+                      size='compact-xs'
+                    >
+                      <RiSpotifyLine />
+                    </Button>
+                  </Tooltip>
+                )}
               </Group>
             </Group>
           ))

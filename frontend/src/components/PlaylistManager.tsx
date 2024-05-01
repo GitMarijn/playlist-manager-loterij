@@ -21,6 +21,7 @@ import { MdDeleteOutline } from "react-icons/md";
 import { Playlist } from "../types";
 import { PlaylistItem } from "./PlaylistItem";
 import { v4 as uuidv4 } from "uuid";
+import { notifications } from "@mantine/notifications";
 
 export function PlaylistManager(): JSX.Element {
   const [playlists, setPlaylists] = useState<Array<Playlist>>([]);
@@ -43,6 +44,12 @@ export function PlaylistManager(): JSX.Element {
     setPlaylists((prev) => [...prev, newPlaylist]);
     setLocalStorageItem("playlists", [...playlists, newPlaylist]);
     setNewPlaylistName("");
+
+    notifications.show({
+      title: "Playlist created",
+      message: "Playlist was successfully created.",
+      color: theme.other.green,
+    });
   };
 
   const deletePlaylist = (playlistUuid: string) => {
@@ -51,6 +58,12 @@ export function PlaylistManager(): JSX.Element {
       "playlists",
       playlists.filter((p) => p.uuid !== playlistUuid)
     );
+
+    notifications.show({
+      title: "Playlist deleted",
+      message: "Playlist was successfully deleted.",
+      color: theme.other.green,
+    });
   };
 
   return (
